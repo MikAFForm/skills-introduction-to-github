@@ -1,0 +1,48 @@
+{
+open Par
+}
+
+let whitespace = [' ' '\t' '\n' '\r']+
+let num = '-'? ['0'-'9']+
+let var = ['a'-'z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '\'']*
+
+rule read =
+  parse
+  | "let" { LET } (*Expressions*)
+  | "rec" {REC}
+  | "=" { EQ }
+  | "in" { IN }
+  | ":" { COLLON }
+  | "fun" {FUN}
+  | "if" { IF }
+  | "then" { THEN }
+  | "else" { ELSE }
+  | "(" { LPAREN }
+  | ")" { RPAREN }
+  | "unit" {UNITTY}
+  | "int" { INTTY }
+  | "bool" { BOOLTY }
+  |"->" {ARROW}
+  | "()" { UNIT }
+  | "true" { TRUE }
+  | "false" { FALSE }
+   (*Operators*)
+  | "+" { ADD }
+  | "-" { SUB }
+  | "*" { MUL }
+  | "/" { DIV }
+  | "mod" { MOD }
+  | "<" { LT } (*Comparisons*)
+  | "<=" { LTE }
+  | ">" { GT }
+  | ">=" { GTE }
+  | "<>" { NEQ }
+  | "&&" { AND }
+  | "||" { OR }
+  | "assert" { ASSERT } 
+  | num { NUM (int_of_string (Lexing.lexeme lexbuf)) }
+  | var { VAR (Lexing.lexeme lexbuf) }
+  | whitespace { read lexbuf }
+  | eof { EOF }
+  | _ { failwith ("Unknown token: " ^ Lexing.lexeme lexbuf) } (*Case to catch errors*)
+  
